@@ -1,6 +1,6 @@
 import { db } from '../db/index.js';
 import { jobs, users, skills, jobSkills, userSkills } from '../db/schema.js';
-import { eq, and, desc, sql, inArray } from 'drizzle-orm';
+import { eq, and, desc, sql, inArray, like, or as orCondition } from 'drizzle-orm';
 
 // Create a new job (recruiter only)
 export const createJob = async (req, res) => {
@@ -49,10 +49,58 @@ export const createJob = async (req, res) => {
   }
 };
 
-// Get all jobs
+// Get all jobs with filters
 export const getAllJobs = async (req, res) => {
   try {
-    const allJobs = await db
+    const {
+      location,
+      company,
+      employmentType,
+      minSalary,
+      maxSalary,
+      skillIds,
+      search,
+    } = req.query;
+
+    // Build where conditions
+    const conditions = [eq(jobs.isActive, true)];
+
+    if (location) {
+      conditions.push(like(jobs.location, `%${location}%`));
+    }
+
+    if (company) {
+      conditions.push(like(jobs.company, `%${company}%`));
+    }
+
+    if (employmentType) {
+      conditions.push(eq(jobs.employmentType, employmentType));
+    }
+
+    if (minSalary) {
+      // Extract numeric value from salary string (e.g., "50000" or "₹50,000")
+      conditions.push(
+        sql`CAST(REGEXP_REPLACE(${jobs.salary}, '[^0-9]', '', 'g') AS INTEGER) >= ${parseInt(minSalary)}`
+      );
+    }
+
+    if (maxSalary) {
+      conditions.push(
+        sql`CAST(REGEXP_REPLACE(${jobs.salary}, '[^0-9]', '', 'g') AS INTEGER) <= ${parseInt(maxSalary)}`
+      );
+    }
+
+    if (search) {
+      conditions.push(
+        orCondition(
+          like(jobs.title, `%${search}%`),
+          like(jobs.description, `%${search}%`),
+          like(jobs.company, `%${search}%`)
+        )
+      );
+    }
+
+    let allJobs = await db
       .select({
         id: jobs.id,
         title: jobs.title,
@@ -71,8 +119,23 @@ export const getAllJobs = async (req, res) => {
       })
       .from(jobs)
       .innerJoin(users, eq(jobs.recruiterId, users.id))
-      .where(eq(jobs.isActive, true))
+      .where(and(...conditions))
       .orderBy(desc(jobs.createdAt));
+
+    // Filter by skills if provided
+    if (skillIds && skillIds.length > 0) {
+      const skillIdArray = Array.isArray(skillIds) ? skillIds : [skillIds];
+      const skillIdNumbers = skillIdArray.map((id) => parseInt(id));
+
+      // Get jobs that have at least one of the specified skills
+      const jobsWithSkills = await db
+        .select({ jobId: jobSkills.jobId })
+        .from(jobSkills)
+        .where(inArray(jobSkills.skillId, skillIdNumbers));
+
+      const jobIdsWithSkills = new Set(jobsWithSkills.map((j) => j.jobId));
+      allJobs = allJobs.filter((job) => jobIdsWithSkills.has(job.id));
+    }
 
     // Get skills for each job
     const jobsWithSkills = await Promise.all(
@@ -152,10 +215,19 @@ export const getJobById = async (req, res) => {
   }
 };
 
-// Get relevant jobs based on candidate skills
+// Get relevant jobs based on candidate skills with filters
 export const getRelevantJobs = async (req, res) => {
   try {
     const userId = req.user.id;
+    const {
+      location,
+      company,
+      employmentType,
+      minSalary,
+      maxSalary,
+      skillIds: filterSkillIds,
+      search,
+    } = req.query;
 
     // Get user skills
     const userSkillsList = await db
@@ -190,8 +262,45 @@ export const getRelevantJobs = async (req, res) => {
 
     const jobIds = Object.keys(jobMatchCounts).map(Number);
 
+    // Build where conditions
+    const conditions = [inArray(jobs.id, jobIds), eq(jobs.isActive, true)];
+
+    if (location) {
+      conditions.push(like(jobs.location, `%${location}%`));
+    }
+
+    if (company) {
+      conditions.push(like(jobs.company, `%${company}%`));
+    }
+
+    if (employmentType) {
+      conditions.push(eq(jobs.employmentType, employmentType));
+    }
+
+    if (minSalary) {
+      conditions.push(
+        sql`CAST(REGEXP_REPLACE(${jobs.salary}, '[^0-9]', '', 'g') AS INTEGER) >= ${parseInt(minSalary)}`
+      );
+    }
+
+    if (maxSalary) {
+      conditions.push(
+        sql`CAST(REGEXP_REPLACE(${jobs.salary}, '[^0-9]', '', 'g') AS INTEGER) <= ${parseInt(maxSalary)}`
+      );
+    }
+
+    if (search) {
+      conditions.push(
+        orCondition(
+          like(jobs.title, `%${search}%`),
+          like(jobs.description, `%${search}%`),
+          like(jobs.company, `%${search}%`)
+        )
+      );
+    }
+
     // Get full job details for matching jobs
-    const jobsList = await db
+    let jobsList = await db
       .select({
         id: jobs.id,
         title: jobs.title,
@@ -209,7 +318,21 @@ export const getRelevantJobs = async (req, res) => {
       })
       .from(jobs)
       .innerJoin(users, eq(jobs.recruiterId, users.id))
-      .where(and(inArray(jobs.id, jobIds), eq(jobs.isActive, true)));
+      .where(and(...conditions));
+
+    // Filter by additional skills if provided
+    if (filterSkillIds && filterSkillIds.length > 0) {
+      const filterSkillIdArray = Array.isArray(filterSkillIds) ? filterSkillIds : [filterSkillIds];
+      const filterSkillIdNumbers = filterSkillIdArray.map((id) => parseInt(id));
+
+      const jobsWithFilterSkills = await db
+        .select({ jobId: jobSkills.jobId })
+        .from(jobSkills)
+        .where(inArray(jobSkills.skillId, filterSkillIdNumbers));
+
+      const jobIdsWithFilterSkills = new Set(jobsWithFilterSkills.map((j) => j.jobId));
+      jobsList = jobsList.filter((job) => jobIdsWithFilterSkills.has(job.id));
+    }
 
     // Get skills for each job and add match count
     const jobsWithSkills = await Promise.all(

@@ -67,11 +67,24 @@ export const applications = pgTable("applications", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Messages table
+export const messages = pgTable("messages", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  senderId: integer("sender_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  receiverId: integer("receiver_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  jobId: integer("job_id").references(() => jobs.id, { onDelete: "set null" }), // Optional: link to job
+  content: text().notNull(),
+  isRead: boolean("is_read").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   userSkills: many(userSkills),
   jobs: many(jobs),
   applications: many(applications),
+  sentMessages: many(messages, { relationName: "sentMessages" }),
+  receivedMessages: many(messages, { relationName: "receivedMessages" }),
 }));
 
 export const skillsRelations = relations(skills, ({ many }) => ({
@@ -118,5 +131,22 @@ export const applicationsRelations = relations(applications, ({ one }) => ({
   candidate: one(users, {
     fields: [applications.candidateId],
     references: [users.id],
+  }),
+}));
+
+export const messagesRelations = relations(messages, ({ one }) => ({
+  sender: one(users, {
+    fields: [messages.senderId],
+    references: [users.id],
+    relationName: "sentMessages",
+  }),
+  receiver: one(users, {
+    fields: [messages.receiverId],
+    references: [users.id],
+    relationName: "receivedMessages",
+  }),
+  job: one(jobs, {
+    fields: [messages.jobId],
+    references: [jobs.id],
   }),
 }));

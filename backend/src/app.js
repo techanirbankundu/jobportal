@@ -3,6 +3,9 @@ import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
+import applicationRoutes from './routes/applicationRoutes.js';
+import messageRoutes from './routes/messageRoutes.js';
+import atsRoutes from './routes/atsRoutes.js';
 
 const app = express();
 
@@ -15,6 +18,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/jobs', jobRoutes);
+app.use('/api', applicationRoutes);
+app.use('/api', messageRoutes);
+app.use('/api', atsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

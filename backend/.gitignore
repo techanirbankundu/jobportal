@@ -31,3 +31,6 @@ logs/
 # Test reports
 junit.xml
 mocha.xml
+
+# Uploads directory
+uploads/
