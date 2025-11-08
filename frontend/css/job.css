@@ -1,0 +1,129 @@
+/* ==== Job Cards Styling ==== */
+.job {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  position: relative;
+}
+
+.job:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Job title */
+.job h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--clr-primary-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Add an icon automatically before job title */
+.job[data-title*="designer"] h3::before {
+  content: "🎨";
+}
+.job[data-title*="developer"] h3::before {
+  content: "💻";
+}
+.job[data-title*="engineer"] h3::before {
+  content: "🛠️";
+}
+.job[data-title*="manager"] h3::before {
+  content: "📋";
+}
+.job[data-title*="marketer"],
+.job[data-title*="marketing"] h3::before {
+  content: "📢";
+}
+.job[data-title*="seo"] h3::before {
+  content: "🔍";
+}
+.job[data-title*="cloud"] h3::before {
+  content: "☁️";
+}
+.job[data-title*="cyber"] h3::before {
+  content: "🔒";
+}
+
+/* Company and meta */
+.job p {
+  margin: 0;
+  color: #555;
+}
+
+.job strong {
+  color: var(--clr-primary);
+  font-size: 1.05rem;
+}
+
+/* Buttons inside job cards */
+.job a {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: var(--transition);
+  background: var(--clr-primary);
+  color: #fff;
+  text-align: center;
+}
+
+.job a:hover {
+  background: var(--clr-primary-dark);
+}
+.job a:last-child {
+  background: #28a745;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  margin-left: 8px;
+  transition: var(--transition);
+}
+
+.job a:last-child:hover {
+  background: #218838;
+}
+/* Apply Button */
+.btn-apply {
+  display: inline-block;
+  margin-left: 10px;
+  background: #28a745;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.btn-apply:hover {
+  background: #218838;
+  transform: translateY(-2px);
+}
+.btn-details {
+  display: inline-block;
+  background: #0066cc;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.btn-details:hover {
+  background: #004a99;
+  transform: translateY(-2px);
+}
+

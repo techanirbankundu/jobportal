@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Details - JobBoard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header>
+  <div class="logo">
+    <a href="index.html">
+      <img src="images/logo.png" alt="JobBoard Logo">
+    </a>
+    <span style="font-weight:bold; font-size:2.5rem; margin-left:8px; color:#8797a7; position:static;">WORKIGO</span>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="job_listing.html" class="active">Find Jobs</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-content">
+    <h2 id="jobTitle">Job Title</h2>
+    <p id="jobMeta">Company — Location | Salary</p>
+  </div>
+</section>
+
+<main class="container">
+  <article class="card">
+    <h3>Job Description</h3>
+    <p id="jobDescription"></p>
+  </article>
+  <article class="card">
+    <h3>Requirements</h3>
+    <ul id="jobRequirements"></ul>
+  </article>
+  <article class="card">
+    <h3>Apply Now</h3>
+    <form id="applyForm">
+      <input type="text" placeholder="Full Name" required>
+      <input type="email" placeholder="Email" required>
+      <input type="file" required>
+      <textarea placeholder="Why should we hire you?" rows="4"></textarea>
+      <button type="submit">Submit Application</button>
+    </form>
+  </article>
+</main>
+
+<footer><p>&copy; 2025 JobBoard. All rights reserved.</p></footer>
+
+<script>
+  const jobs = {
+    uiux: {
+      title: "UI/UX Designer",
+      company: "Creative Agency",
+      location: "Delhi",
+      salary: "₹30,000 - ₹40,000",
+      description: "Design intuitive interfaces, conduct user research, and enhance customer experiences.",
+      requirements: ["2+ years in UI/UX", "Figma/Sketch expertise", "Responsive design knowledge", "Team player"]
+    },
+    graphic: {
+      title: "Graphic Designer",
+      company: "Design Studio",
+      location: "Bangalore",
+      salary: "₹25,000 - ₹32,000",
+      description: "Create visual assets for branding, social media, and campaigns.",
+      requirements: ["Portfolio in graphic design", "Adobe Creative Suite", "Deadline-oriented", "Creative thinker"]
+    },
+    fullstack: {
+      title: "Full Stack Developer",
+      company: "Tech Startup",
+      location: "Pune",
+      salary: "₹45,000 - ₹50,000",
+      description: "Develop scalable web applications with frontend and backend expertise.",
+      requirements: ["3+ years in web dev", "React & Node.js", "Database knowledge", "Problem-solving skills"]
+    },
+    frontend: {
+      title: "Frontend Developer",
+      company: "InnovateX",
+      location: "Hyderabad",
+      salary: "₹42,000 - ₹48,000",
+      description: "Build responsive and modern web interfaces with performance focus.",
+      requirements: ["HTML, CSS, JS", "React or Vue", "Cross-browser testing", "UI/UX collaboration"]
+    },
+    backend: {
+      title: "Backend Engineer",
+      company: "CloudTech",
+      location: "Delhi",
+      salary: "₹40,000 - ₹47,000",
+      description: "Develop secure backend APIs and manage scalable cloud systems.",
+      requirements: ["Node.js/Python", "Database design", "API development", "Cloud deployment"]
+    },
+    marketer: {
+      title: "Digital Marketer",
+      company: "Marketing Hub",
+      location: "Bangalore",
+      salary: "₹28,000 - ₹35,000",
+      description: "Manage SEO, ads, and social campaigns to grow brand reach.",
+      requirements: ["Google Ads/SEO", "Content creation", "Analytics tools", "Marketing strategy"]
+    },
+    seo: {
+      title: "SEO Specialist",
+      company: "Growth Agency",
+      location: "Pune",
+      salary: "₹32,000 - ₹38,000",
+      description: "Optimize websites for search engines and improve ranking.",
+      requirements: ["SEO tools knowledge", "Keyword research", "Link building", "Content optimization"]
+    },
+    mobile: {
+      title: "Mobile App Developer",
+      company: "AppWorks",
+      location: "Hyderabad",
+      salary: "₹40,000 - ₹40,500",
+      description: "Build high-quality mobile applications for Android/iOS.",
+      requirements: ["Java/Kotlin/Swift", "Mobile UI design", "App Store deployment", "Bug fixing"]
+    },
+    ios: {
+      title: "iOS Developer",
+      company: "SwiftLabs",
+      location: "Delhi",
+      salary: "₹40,200 - ₹50,000",
+      description: "Develop iOS apps with Swift and ensure performance.",
+      requirements: ["Swift expertise", "iOS SDK knowledge", "REST API integration", "Team collaboration"]
+    },
+    civil: {
+      title: "Civil Engineer",
+      company: "BuildPro",
+      location: "Bangalore",
+      salary: "₹38,000 - ₹45,000",
+      description: "Work on infrastructure projects and oversee construction quality.",
+      requirements: ["Civil engineering degree", "Project planning", "Site supervision", "AutoCAD"]
+    },
+    manager: {
+      title: "Construction Project Manager",
+      company: "Urban Builders",
+      location: "Pune",
+      salary: "₹50,000 - ₹60,000",
+      description: "Lead construction projects, manage teams, and ensure timelines.",
+      requirements: ["5+ years in management", "Budget handling", "Leadership skills", "PMP certification"]
+    },
+    cloud: {
+      title: "Cloud Architect",
+      company: "NextGen Cloud",
+      location: "Delhi",
+      salary: "₹60,000 - ₹70,000",
+      description: "Design cloud systems and manage scalable architecture.",
+      requirements: ["AWS/Azure expertise", "Microservices knowledge", "Security best practices", "Team coordination"]
+    },
+    cyber: {
+      title: "Cybersecurity Analyst",
+      company: "SecureTech",
+      location: "Hyderabad",
+      salary: "₹5,000 - ₹6,500",
+      description: "Protect systems from cyber threats and implement security measures.",
+      requirements: ["Network security", "SIEM tools", "Incident response", "Risk management"]
+    }
+  };
+  const params = new URLSearchParams(window.location.search);
+  const jobId = params.get("id");
+
+  if (jobId && jobs[jobId]) {
+    const job = jobs[jobId];
+    document.getElementById("jobTitle").textContent = job.title;
+    document.getElementById("jobMeta").textContent = `${job.company} — ${job.location} | ${job.salary}`;
+    document.getElementById("jobDescription").textContent = job.description;
+
+    const reqList = document.getElementById("jobRequirements");
+    reqList.innerHTML = "";
+    job.requirements.forEach(req => {
+      const li = document.createElement("li");
+      li.textContent = req;
+      reqList.appendChild(li);
+    });
+  } else {
+    document.getElementById("jobTitle").textContent = "Job Not Found";
+    document.getElementById("jobMeta").textContent = "";
+    document.getElementById("jobDescription").textContent = "The job you are looking for does not exist.";
+  }
+</script>
+</body>
+</html>

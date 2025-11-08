@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Post - JobBoard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <a href="index.html">
+        <img src="images/logo.png" alt="JobBoard Logo">
+      </a>
+      <span style="font-weight:bold; font-size:2.5rem; margin-left:8px; color:#8797a7; position:static;">WORKIGO</span>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="job_listing.html">Find Jobs</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="blog.html" class="active">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Blog Content -->
+  <main class="blog-wrapper">
+
+    <!-- Hero Section -->
+    <section class="blog-hero">
+      <div class="overlay"></div>
+      <div class="hero-text">
+        <h1 id="blogTitle"></h1>
+        <p id="blogMeta" class="meta"></p>
+        <p id="readingTime" class="reading-time"></p>
+      </div>
+    </section>
+
+    <!-- Article -->
+    <article class="blog-article">
+      <p id="blogContent"></p>
+      <div class="pro-tip">
+        💡 <strong>Pro Tip:</strong> Always research the company before your interview.
+      </div>
+    </article>
+
+    <!-- Author Box -->
+    <div class="author-box">
+      <img src="https://img.icons8.com/ios-filled/80/0066cc/user-male-circle.png" alt="Author">
+      <div>
+        <h4>Written by Admin</h4>
+        <p>Career Coach with 10+ years of experience helping job seekers succeed in interviews and grow professionally.</p>
+        <a href="#">🔗 Connect on LinkedIn</a>
+      </div>
+    </div>
+
+    <!-- Related Posts -->
+    <section class="related-posts">
+      <h3>Related Articles</h3>
+      <div id="relatedGrid" class="related-grid"></div>
+    </section>
+
+    <!-- Navigation -->
+    <div class="blog-nav">
+      <a href="#" id="prevPost" class="prev"></a>
+      <a href="#" id="nextPost" class="next"></a>
+    </div>
+
+  </main>
+
+  <!-- Floating Share -->
+  <div class="floating-share">
+    <a href="#"><img src="https://img.icons8.com/ios-filled/28/ffffff/facebook.png" alt="Facebook"></a>
+    <a href="#"><img src="https://img.icons8.com/ios-filled/28/ffffff/twitter.png" alt="Twitter"></a>
+    <a href="#"><img src="https://img.icons8.com/ios-filled/28/ffffff/linkedin.png" alt="LinkedIn"></a>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 JobBoard. All rights reserved.</p>
+  </footer>
+
+  <!-- Script -->
+  <script>
+    // Blog Data
+    const blogs = {
+      1: {
+        title: "How to Prepare for a Job Interview",
+        meta: "By Admin | Jan 2025",
+        content: `
+          Interviews can feel intimidating, but preparation is the key.
+          Research the company, practice common interview questions,
+          and dress professionally. Arrive early and always follow up
+          with a thank-you email.
+        `
+      },
+      2: {
+        title: "Top 10 Skills Employers Look For",
+        meta: "By HR Team | Feb 2025",
+        content: `
+          Employers today value both technical and soft skills.
+          Communication, problem-solving, teamwork, adaptability,
+          and leadership top the list, along with coding, data
+          analysis, and digital marketing expertise.
+        `
+      },
+      3: {
+        title: "Remote Work Best Practices",
+        meta: "By Career Coach | Mar 2025",
+        content: `
+          Remote work requires discipline. Set up a dedicated workspace,
+          maintain a regular schedule, and communicate clearly with
+          your team. Take breaks to avoid burnout and stay connected
+          through virtual meetings.
+        `
+      }
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const params = new URLSearchParams(window.location.search);
+      const blogId = parseInt(params.get("id"), 10);
+
+      const titleEl = document.getElementById("blogTitle");
+      const metaEl = document.getElementById("blogMeta");
+      const contentEl = document.getElementById("blogContent");
+      const readTimeEl = document.getElementById("readingTime");
+
+      if (blogId && blogs[blogId]) {
+        const blog = blogs[blogId];
+        titleEl.textContent = blog.title;
+        metaEl.textContent = blog.meta;
+        contentEl.textContent = blog.content;
+
+        // Reading time
+        const words = blog.content.trim().split(/\s+/).length;
+        const minutes = Math.ceil(words / 200);
+        readTimeEl.textContent = `${minutes} min read`;
+
+        // Navigation
+        const prev = document.getElementById("prevPost");
+        const next = document.getElementById("nextPost");
+        const totalPosts = Object.keys(blogs).length;
+
+        if (blogId > 1) {
+          prev.href = `single-blog.html?id=${blogId - 1}`;
+          prev.textContent = `← ${blogs[blogId - 1].title}`;
+          prev.style.display = "inline-block";
+        } else {
+          prev.style.display = "none";
+        }
+
+        if (blogId < totalPosts) {
+          next.href = `single-blog.html?id=${blogId + 1}`;
+          next.textContent = `${blogs[blogId + 1].title} →`;
+          next.style.display = "inline-block";
+        } else {
+          next.style.display = "none";
+        }
+
+        // Related Posts
+        const relatedGrid = document.getElementById("relatedGrid");
+        relatedGrid.innerHTML = "";
+        Object.keys(blogs).forEach(id => {
+          if (parseInt(id, 10) !== blogId) {
+            const rel = blogs[id];
+            const card = document.createElement("a");
+            card.href = `single-blog.html?id=${id}`;
+            card.className = "related-card";
+            card.innerHTML = `<h4>${rel.title}</h4><p>${rel.meta}</p>`;
+            relatedGrid.appendChild(card);
+          }
+        });
+
+      } else {
+        titleEl.textContent = "Blog Not Found";
+        metaEl.textContent = "";
+        contentEl.textContent = "The article you are looking for does not exist.";
+        readTimeEl.textContent = "";
+        document.getElementById("prevPost").style.display = "none";
+        document.getElementById("nextPost").style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>

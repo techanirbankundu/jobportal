@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apply for Job - JobBoard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header>
+  <div class="logo">
+    <a href="index.html">
+      <img src="images/logo.png" alt="JobBoard Logo">
+    </a>
+    <span style="font-weight:bold; font-size:2.5rem; margin-left:8px; color:#f4f4f5; position:static;">WORKIGO</span>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="job_listing.html">Find Jobs</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-content">
+    <h2 id="applyJobTitle">Apply for Job</h2>
+    <p>Please fill in your details below</p>
+  </div>
+</section>
+
+<main class="container">
+  <article class="card">
+    <form id="applyForm">
+      <input type="text" placeholder="Full Name" required>
+      <input type="email" placeholder="Email" required>
+      <input type="file" required>
+      <textarea placeholder="Why should we hire you?" rows="4"></textarea>
+      <button type="submit">Submit Application</button>
+    </form>
+  </article>
+</main>
+
+<footer><p>&copy; 2025 JobBoard. All rights reserved.</p></footer>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const jobId = params.get("id");
+  const jobTitles = {
+    uiux: "UI/UX Designer",
+    graphic: "Graphic Designer",
+    fullstack: "Full Stack Developer",
+    frontend: "Frontend Developer",
+    backend: "Backend Engineer",
+    marketer: "Digital Marketer",
+    seo: "SEO Specialist",
+    mobile: "Mobile App Developer",
+    ios: "iOS Developer",
+    civil: "Civil Engineer",
+    manager: "Construction Project Manager",
+    cloud: "Cloud Architect",
+    cyber: "Cybersecurity Analyst"
+  };
+
+  if (jobId && jobTitles[jobId]) {
+    document.getElementById("applyJobTitle").textContent = `Apply for ${jobTitles[jobId]}`;
+  }
+</script>
+</body>
+</html>

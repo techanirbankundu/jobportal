@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup - Auth App</title>
+  <link rel="stylesheet" href="css/log_sign.css">
+</head>
+<body>
+  <div class="container">
+    <form id="signup-form">
+      <h2>Signup</h2>
+      <input type="text" id="signup-username" placeholder="Username" required>
+      <input type="email" id="signup-email" placeholder="Email" required>
+      <input type="password" id="signup-password" placeholder="Password" required><br>
+      <button type="submit">Signup</button>
+      <p class="switch">Already have an account? <a href="login.html">Login</a></p>
+    </form>
+  </div>
+
+  <script>
+    const signupForm = document.getElementById("signup-form");
+
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("signup-username").value;
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-password").value;
+
+      const res = await fetch("http://localhost:5000/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password })
+      });
+
+      const data = await res.json();
+      alert(data.message || data.error);
+      if (res.ok) window.location.href = "login.html";
+    });
+  </script>
+</body>
+</html>
